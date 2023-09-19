@@ -1,3 +1,5 @@
-# An-online-shop-Project
+# An Online Shop Project
 
-this repo created by Fady Maher
+Thats my Project in the Backend Field is to practice all my learning topics.
+
+## This project is still under development.
