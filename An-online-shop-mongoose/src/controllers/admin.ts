@@ -2,10 +2,10 @@ import { Request, Response, NextFunction } from 'express';
 import Product from '../models/product';
 
 export const getAddProduct = (req: Request, res: Response, next: NextFunction) => {
-  res.render('admin/edit-product', {
-    pageTitle: 'Add Product',
+ pageTitle: 'Add Product',
     path: '/admin/add-product',
-    editing: false
+    editing: false  res.render('admin/edit-product', {
+   
   });
 };
 
