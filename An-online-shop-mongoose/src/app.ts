@@ -3,19 +3,21 @@ import express, { Request, Response, NextFunction } from 'express';
 import bodyParser from 'body-parser';
 import mongoose from 'mongoose';
 
-import errorController from './controllers/error';
+import {get404} from './controllers/error';
 import { mongoConnect } from './util/database';
 import User from './models/user';
 import adminRoutes from './routes/admin';
 import shopRoutes from './routes/shop';
-
+import { ParamsDictionary } from 'express-serve-static-core';
 const app = express();
 
 app.set('view engine', 'ejs');
 app.set('views', 'views');
 
 app.use(bodyParser.urlencoded({ extended: false }));
-app.use(express.static(path.join(__dirname, 'public')));
+interface CustomRequest extends Request<ParamsDictionary, any, any, ParsedQs, Record<string, any>> {
+  user: User;
+}
 
 app.use((req: Request, res: Response, next: NextFunction) => {
   User.findById('5baa2528563f16379fc8a610')
@@ -32,8 +34,15 @@ app.use((req: Request, res: Response, next: NextFunction) => {
 app.use('/admin', adminRoutes);
 app.use(shopRoutes);
 
-app.use(errorController.get404);
+app.use(get404);
 
-mongoConnect(() => {
-  app.listen(3000);
+mongoose.connect('mongodb+srv://fadyy:q8Ecp1qPrsTWFbc9@cluster0.gzorwf5.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0',
+)
+.then(() => {
+console.log('Connected to MongoDB');
+app.listen(3000)
+})
+
+.catch(err => {
+  console.log("Error connected to MongoDB:", err);
 });
