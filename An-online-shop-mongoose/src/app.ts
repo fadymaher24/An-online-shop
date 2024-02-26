@@ -37,7 +37,7 @@ app.use(shopRoutes);
 
 app.use(get404);
 
-mongoose.connect('mongodb+srv://fadyy:11223344Fff@cluster0.uz4c3us.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0',
+mongoose.connect('',
 )
 .then(() => {
 console.log('Connected to MongoDB');
