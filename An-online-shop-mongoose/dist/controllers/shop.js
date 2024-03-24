@@ -3,7 +3,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.getIndex = exports.getProduct = exports.getProducts = void 0;
+exports.postCart = exports.getIndex = exports.getProduct = exports.getProducts = void 0;
 const product_1 = __importDefault(require("../models/product"));
 const getProducts = (req, res, next) => {
     product_1.default.find()
@@ -47,55 +47,19 @@ const getIndex = (req, res, next) => {
     });
 };
 exports.getIndex = getIndex;
-// export const getCart = (req: Request, res: Response, next: NextFunction) => {
-//   req.user
-//     .getCart()
-//     .then(cart => {
-//       return cart
-//         .getProducts()
-//         .then(products => {
-//           res.render('shop/cart', {
-//             path: '/cart',
-//             pageTitle: 'Your Cart',
-//             products: products
-//           });
-//         })
-//         .catch(err => console.log(err));
-//     })
-//     .catch(err => console.log(err));
-// };
-// export const postCart = (req: Request, res: Response, next: NextFunction) => {
-//   const prodId = req.body.productId;
-//   let fetchedCart;
-//   let newQuantity = 1;
-//   req.user
-//     .getCart()
-//     .then(cart => {
-//       fetchedCart = cart;
-//       return cart.getProducts({ where: { id: prodId } });
-//     })
-//     .then(products => {
-//       let product;
-//       if (products.length > 0) {
-//         product = products[0];
-//       }
-//       if (product) {
-//         const oldQuantity = product.cartItem.quantity;
-//         newQuantity = oldQuantity + 1;
-//         return product;
-//       }
-//       return Product.findById(prodId);
-//     })
-//     .then(product => {
-//       return fetchedCart.addProduct(product, {
-//         through: { quantity: newQuantity }
-//       });
-//     })
-//     .then(() => {
-//       res.redirect('/cart');
-//     })
-//     .catch(err => console.log(err));
-// };
+const postCart = (req, res, next) => {
+    const prodId = req.body.productId;
+    product_1.default.findById(prodId)
+        .then(product => {
+        return req.user.addToCart(product);
+    })
+        .then(result => {
+        console.log(result);
+        res.redirect('/cart');
+    })
+        .catch(err => console.log(err));
+};
+exports.postCart = postCart;
 // export const postCartDeleteProduct = (req: Request, res: Response, next: NextFunction) => {
 //   const prodId = req.body.productId;
 //   req.user

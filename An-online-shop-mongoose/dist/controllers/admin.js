@@ -85,7 +85,10 @@ const postEditProduct = (req, res, next) => {
 exports.postEditProduct = postEditProduct;
 const getProducts = (req, res, next) => {
     product_1.default.find()
+        // .select('title price -_id')
+        // .populate('userId', 'name')
         .then(products => {
+        console.log(products);
         res.render('admin/products', {
             prods: products,
             pageTitle: 'Admin Products',

@@ -3,6 +3,7 @@ import { Request, Response, NextFunction } from 'express';
 
 import Product  from '../models/product';
 
+import { Document } from 'mongoose';
 
 
 export const getProducts = (req: Request, res: Response, next: NextFunction) => {
@@ -65,39 +66,24 @@ export const getIndex = (req: Request, res: Response, next: NextFunction) => {
 //     .catch(err => console.log(err));
 // };
 
-// export const postCart = (req: Request, res: Response, next: NextFunction) => {
-//   const prodId = req.body.productId;
-//   let fetchedCart;
-//   let newQuantity = 1;
-//   req.user
-//     .getCart()
-//     .then(cart => {
-//       fetchedCart = cart;
-//       return cart.getProducts({ where: { id: prodId } });
-//     })
-//     .then(products => {
-//       let product;
-//       if (products.length > 0) {
-//         product = products[0];
-//       }
+// customRequestHandler
 
-//       if (product) {
-//         const oldQuantity = product.cartItem.quantity;
-//         newQuantity = oldQuantity + 1;
-//         return product;
-//       }
-//       return Product.findById(prodId);
-//     })
-//     .then(product => {
-//       return fetchedCart.addProduct(product, {
-//         through: { quantity: newQuantity }
-//       });
-//     })
-//     .then(() => {
-//       res.redirect('/cart');
-//     })
-//     .catch(err => console.log(err));
-// };
+interface CustomRequest extends Request {
+  user?: Document<any, any> | null; // Update the type to match your User model
+}
+
+export const postCart = (req: CustomRequest, res: Response, next: NextFunction) => {
+  const prodId = req.body.productId;
+  Product.findById(prodId)
+    .then(product => {
+      return req.user.addToCart(product);
+    })
+    .then(result => {
+      console.log(result);
+      res.redirect('/cart');
+    })
+    .catch(err => console.log(err));
+};
 
 // export const postCartDeleteProduct = (req: Request, res: Response, next: NextFunction) => {
 //   const prodId = req.body.productId;
