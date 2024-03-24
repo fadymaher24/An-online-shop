@@ -9,7 +9,6 @@ export const getAddProduct = (req: Request, res: Response, next: NextFunction) =
   });
 };
 
-
   export const postAddProduct = (req: Request, res: Response, next: NextFunction) => {
     const title = (req.body as { title: string })?.title; // Parse req.body as an object with a 'title' property of type string
     const imageUrl = (req.body as { imageUrl: string })?.imageUrl; // Parse req.body as an object with an 'imageUrl' property of type string
@@ -19,7 +18,8 @@ export const getAddProduct = (req: Request, res: Response, next: NextFunction) =
       title: title,
       price: price,
       description: description,
-      imageUrl:imageUrl
+      imageUrl:imageUrl,
+      userId: (req as Request & { user: string }).user
     });
   product
     .save()

@@ -21,6 +21,11 @@ const productSchema = new Schema({
     imageUrl: {
         type: String,
         required: true
+    },
+    userId: {
+        type: Schema.Types.ObjectId,
+        ref: 'User',
+        required: true
     }
 });
 // Mongoose will automatically create a collection called 'products' based on the model name 'Product' 
