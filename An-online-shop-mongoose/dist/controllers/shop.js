@@ -1,52 +1,52 @@
 "use strict";
+var __importDefault = (this && this.__importDefault) || function (mod) {
+    return (mod && mod.__esModule) ? mod : { "default": mod };
+};
 Object.defineProperty(exports, "__esModule", { value: true });
-// export const getProducts = (req: Request, res: Response, next: NextFunction) => {
-//   Product.findAll()
-//     .then(products => {
-//       res.render('shop/product-list', {
-//         prods: products,
-//         pageTitle: 'All Products',
-//         path: '/products'
-//       });
-//     })
-//     .catch(err => {
-//       console.log(err);
-//     });
-// };
-// export const getProduct = (req: Request, res: Response, next: NextFunction) => {
-//   const prodId = req.params.productId;
-//   // Product.findAll({ where: { id: prodId } })
-//   //   .then(products => {
-//   //     res.render('shop/product-detail', {
-//   //       product: products[0],
-//   //       pageTitle: products[0].title,
-//   //       path: '/products'
-//   //     });
-//   //   })
-//   //   .catch(err => console.log(err));
-//   Product.findById(prodId)
-//     .then(product => {
-//       res.render('shop/product-detail', {
-//         product: product,
-//         pageTitle: product.title,
-//         path: '/products'
-//       });
-//     })
-//     .catch(err => console.log(err));
-// };
-// export const getIndex = (req: Request, res: Response, next: NextFunction) => {
-//   Product.findAll()
-//     .then(products => {
-//       res.render('shop/index', {
-//         prods: products,
-//         pageTitle: 'Shop',
-//         path: '/'
-//       });
-//     })
-//     .catch(err => {
-//       console.log(err);
-//     });
-// };
+exports.getIndex = exports.getProduct = exports.getProducts = void 0;
+const product_1 = __importDefault(require("../models/product"));
+const getProducts = (req, res, next) => {
+    product_1.default.find()
+        .then(products => {
+        console.log(products);
+        res.render('shop/product-list', {
+            prods: products,
+            pageTitle: 'All Products',
+            path: '/products'
+        });
+    })
+        .catch(err => {
+        console.log(err);
+    });
+};
+exports.getProducts = getProducts;
+const getProduct = (req, res, next) => {
+    const prodId = req.params.productId;
+    product_1.default.findById(prodId)
+        .then(product => {
+        res.render('shop/product-detail', {
+            product: product,
+            pageTitle: product ? product.title : '',
+            path: '/products'
+        });
+    })
+        .catch(err => console.log(err));
+};
+exports.getProduct = getProduct;
+const getIndex = (req, res, next) => {
+    product_1.default.find()
+        .then(products => {
+        res.render('shop/index', {
+            prods: products,
+            pageTitle: 'Shop',
+            path: '/'
+        });
+    })
+        .catch(err => {
+        console.log(err);
+    });
+};
+exports.getIndex = getIndex;
 // export const getCart = (req: Request, res: Response, next: NextFunction) => {
 //   req.user
 //     .getCart()

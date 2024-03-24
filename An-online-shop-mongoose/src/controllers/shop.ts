@@ -5,55 +5,47 @@ import Product  from '../models/product';
 
 
 
-// export const getProducts = (req: Request, res: Response, next: NextFunction) => {
-//   Product.findAll()
-//     .then(products => {
-//       res.render('shop/product-list', {
-//         prods: products,
-//         pageTitle: 'All Products',
-//         path: '/products'
-//       });
-//     })
-//     .catch(err => {
-//       console.log(err);
-//     });
-// };
+export const getProducts = (req: Request, res: Response, next: NextFunction) => {
+  Product.find()
+    .then(products => {
+      console.log(products);
+      res.render('shop/product-list', {
+        prods: products,
+        pageTitle: 'All Products',
+        path: '/products'
+      });
+    })
+    .catch(err => {
+      console.log(err);
+    });
+};
 
-// export const getProduct = (req: Request, res: Response, next: NextFunction) => {
-//   const prodId = req.params.productId;
-//   // Product.findAll({ where: { id: prodId } })
-//   //   .then(products => {
-//   //     res.render('shop/product-detail', {
-//   //       product: products[0],
-//   //       pageTitle: products[0].title,
-//   //       path: '/products'
-//   //     });
-//   //   })
-//   //   .catch(err => console.log(err));
-//   Product.findById(prodId)
-//     .then(product => {
-//       res.render('shop/product-detail', {
-//         product: product,
-//         pageTitle: product.title,
-//         path: '/products'
-//       });
-//     })
-//     .catch(err => console.log(err));
-// };
+export const getProduct = (req: Request, res: Response, next: NextFunction) => {
+  const prodId = req.params.productId;
+  Product.findById(prodId)
+    .then(product => {
+        res.render('shop/product-detail', {
+            product: product,
+            pageTitle: product ? product.title : '',
+            path: '/products'
+        });
+    })
+    .catch(err => console.log(err));
+};
 
-// export const getIndex = (req: Request, res: Response, next: NextFunction) => {
-//   Product.findAll()
-//     .then(products => {
-//       res.render('shop/index', {
-//         prods: products,
-//         pageTitle: 'Shop',
-//         path: '/'
-//       });
-//     })
-//     .catch(err => {
-//       console.log(err);
-//     });
-// };
+export const getIndex = (req: Request, res: Response, next: NextFunction) => {
+  Product.find()
+    .then(products => {
+      res.render('shop/index', {
+        prods: products,
+        pageTitle: 'Shop',
+        path: '/'
+      });
+    })
+    .catch(err => {
+      console.log(err);
+    });
+};
 
 // export const getCart = (req: Request, res: Response, next: NextFunction) => {
 //   req.user

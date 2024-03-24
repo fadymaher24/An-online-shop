@@ -1,13 +1,14 @@
 import express from 'express';
-// import * as shopController from '../controllers/shop';
+
+import * as shopController from '../controllers/shop';
 
 const router = express.Router();
 
-// router.get('/', shopController.getIndex);
+router.get('/', shopController.getIndex);
 
-// router.get('/products', shopController.getProducts);
+router.get('/products', shopController.getProducts);
 
-// router.get('/products/:productId', shopController.getProduct);
+router.get('/products/:productId', shopController.getProduct);
 
 // router.get('/cart', shopController.getCart);
 
