@@ -1,6 +1,5 @@
 "use strict";
-// import { Request, Response, NextFunction } from 'express';
-// import Product  from '../models/product';
+Object.defineProperty(exports, "__esModule", { value: true });
 // export const getProducts = (req: Request, res: Response, next: NextFunction) => {
 //   Product.findAll()
 //     .then(products => {

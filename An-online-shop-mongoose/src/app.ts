@@ -13,7 +13,7 @@ import { ParsedQs } from 'qs';
 const app = express();
 
 app.set('view engine', 'ejs');
-app.set('views', 'views');
+app.set('views', 'src/views');
 
 app.use(bodyParser.urlencoded({ extended: false }));
 interface CustomRequest extends Request<ParamsDictionary, any, any, ParsedQs, Record<string, any>> {
@@ -35,15 +35,17 @@ interface CustomRequest extends Request<ParamsDictionary, any, any, ParsedQs, Re
 app.use('/admin', adminRoutes);
 app.use(shopRoutes);
 
+app.use(express.static('src/public'))
+
 app.use(get404);
 
 mongoose.connect('',
 )
 .then(() => {
-console.log('Connected to MongoDB');
+console.log('Connected to Mongoose');
 app.listen(3000)
 })
 
 .catch(err => {
-  console.log("Error connected to MongoDB:", err);
+  console.log("Error connected to Mongoose:", err);
 });
