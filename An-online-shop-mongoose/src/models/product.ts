@@ -21,7 +21,9 @@ const productSchema = new Schema({
   }
 });
 
+// Mongoose will automatically create a collection called 'products' based on the model name 'Product' 
 export default mongoose.model('Product', productSchema);
+
 // import { getDb } from '../util/database';
 
 // interface ProductData {

@@ -1,23 +1,26 @@
 import { Request, Response, NextFunction } from 'express';
 import Product from '../models/product';
 
-// export const getAddProduct = (req: Request, res: Response, next: NextFunction) => {
-//   res.render('admin/edit-product', {
-//     pageTitle: 'Add Product',
-//     path: '/admin/add-product',
-//     editing: false
-//   });
-// };
+export const getAddProduct = (req: Request, res: Response, next: NextFunction) => {
+  res.render('admin/edit-product', {
+    pageTitle: 'Add Product',
+    path: '/admin/add-product',
+    editing: false
+  });
+};
 
-// export const postAddProduct = (req: Request, res: Response, next: NextFunction) => {
-//   // ...
 
   export const postAddProduct = (req: Request, res: Response, next: NextFunction) => {
     const title = (req.body as { title: string })?.title; // Parse req.body as an object with a 'title' property of type string
     const imageUrl = (req.body as { imageUrl: string })?.imageUrl; // Parse req.body as an object with an 'imageUrl' property of type string
     const price = (req.body as { price: number })?.price; // Parse req.body as an object with a 'price' property of type number
     const description = (req.body as { description: string })?.description; // Parse req.body as an object with a 'description' property of type string
-    const product = new Product({title, price, description, imageUrl});
+    const product = new Product({
+      title: title,
+      price: price,
+      description: description,
+      imageUrl:imageUrl
+    });
   product
     .save()
     .then(result => {

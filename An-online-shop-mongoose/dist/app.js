@@ -29,7 +29,7 @@ app.use('/admin', admin_1.default);
 app.use(shop_1.default);
 app.use(express_1.default.static('src/public'));
 app.use(error_1.get404);
-mongoose_1.default.connect('mongodb+srv://fadyy:11223344Fff@cluster0.uz4c3us.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0')
+mongoose_1.default.connect('mongodb+srv://fadyy:11223344Fff@cluster0.uz4c3us.mongodb.net/shop?retryWrites=true&w=majority&appName=Cluster0')
     .then(() => {
     console.log('Connected to Mongoose');
     app.listen(3000);

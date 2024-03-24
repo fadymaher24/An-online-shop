@@ -3,24 +3,28 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.postAddProduct = void 0;
+exports.postAddProduct = exports.getAddProduct = void 0;
 const product_1 = __importDefault(require("../models/product"));
-// export const getAddProduct = (req: Request, res: Response, next: NextFunction) => {
-//   res.render('admin/edit-product', {
-//     pageTitle: 'Add Product',
-//     path: '/admin/add-product',
-//     editing: false
-//   });
-// };
-// export const postAddProduct = (req: Request, res: Response, next: NextFunction) => {
-//   // ...
+const getAddProduct = (req, res, next) => {
+    res.render('admin/edit-product', {
+        pageTitle: 'Add Product',
+        path: '/admin/add-product',
+        editing: false
+    });
+};
+exports.getAddProduct = getAddProduct;
 const postAddProduct = (req, res, next) => {
     var _a, _b, _c, _d;
     const title = (_a = req.body) === null || _a === void 0 ? void 0 : _a.title; // Parse req.body as an object with a 'title' property of type string
     const imageUrl = (_b = req.body) === null || _b === void 0 ? void 0 : _b.imageUrl; // Parse req.body as an object with an 'imageUrl' property of type string
     const price = (_c = req.body) === null || _c === void 0 ? void 0 : _c.price; // Parse req.body as an object with a 'price' property of type number
     const description = (_d = req.body) === null || _d === void 0 ? void 0 : _d.description; // Parse req.body as an object with a 'description' property of type string
-    const product = new product_1.default({ title, price, description, imageUrl });
+    const product = new product_1.default({
+        title: title,
+        price: price,
+        description: description,
+        imageUrl: imageUrl
+    });
     product
         .save()
         .then(result => {
