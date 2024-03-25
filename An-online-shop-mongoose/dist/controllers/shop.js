@@ -55,10 +55,11 @@ const getCart = (req, res, next) => {
         .populate('cart.items.productId')
         .then((user) => {
         console.log(user.cart.items);
+        const Products = user.cart.items;
         res.render('shop/cart', {
             path: '/cart',
             pageTitle: 'Your Cart',
-            products: user.cart.items
+            products: Products
         });
     })
         .catch((err) => console.log(err));

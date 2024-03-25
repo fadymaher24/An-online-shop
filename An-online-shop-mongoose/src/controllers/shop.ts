@@ -5,6 +5,7 @@ import Product  from '../models/product';
 
 import  {User}  from '../models/user';
 import { Document } from 'mongoose';
+import { ProductDocument } from '../models/product';
 
 
 export const getProducts = (req: Request, res: Response, next: NextFunction) => {
@@ -50,7 +51,7 @@ export const getIndex = (req: Request, res: Response, next: NextFunction) => {
 };
 
 interface UserDocument extends User, Document {
-  addToCart(product: typeof Product): Promise<any>;
+  addToCart(product: ProductDocument): Promise<any>;
 }
 
 
@@ -69,17 +70,15 @@ export const getCart = (req: CustomRequest, res: Response, next: NextFunction) =
     .populate('cart.items.productId')
     .then((user: UserDocument) => {
       console.log(user.cart.items);
+      const Products = user.cart.items;
       res.render('shop/cart', {
         path: '/cart',
         pageTitle: 'Your Cart',
-        products: user.cart.items
+        products: Products
       });
     })
     .catch((err: any) => console.log(err));
 };
-
-
-
 
 
 export const postCart = (req: CustomRequest, res: Response, next: NextFunction) => {
