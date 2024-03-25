@@ -51,6 +51,12 @@ const postCart = (req, res, next) => {
     const prodId = req.body.productId;
     product_1.default.findById(prodId)
         .then(product => {
+        if (!product) {
+            throw new Error('Product not found');
+        }
+        if (!req.user) {
+            throw new Error('User not found');
+        }
         return req.user.addToCart(product);
     })
         .then(result => {

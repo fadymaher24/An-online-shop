@@ -1,8 +1,20 @@
-import mongoose from 'mongoose';
+import mongoose, { Document } from 'mongoose';
 
 const Schema = mongoose.Schema;
 
-const userSchema = new Schema({
+export interface User extends Document {
+  name: string;
+  email: string;
+  cart: {
+    items: {
+      productId: mongoose.Schema.Types.ObjectId;
+      quantity: number;
+    }[];
+  };
+  addToCart: (product: any) => Promise<any>;
+}
+
+const userSchema = new Schema<User>({
   name: {
     type: String,
     required: true
@@ -22,29 +34,29 @@ const userSchema = new Schema({
 });
 
 userSchema.methods.addToCart = function(product: any) {
-     const cartProductIndex = this.cart.items.findIndex((cp: any) => {
-      return cp.productId.toString() === product._id.toString();
+  const cartProductIndex = this.cart.items.findIndex((cp: any) => {
+    return cp.productId.toString() === product._id.toString();
+  });
+  let newQuantity = 1;
+  const updatedCartItems = [...this.cart.items];
+
+  if (cartProductIndex >= 0) {
+    newQuantity = this.cart.items[cartProductIndex].quantity + 1;
+    updatedCartItems[cartProductIndex].quantity = newQuantity;
+  } else {
+    updatedCartItems.push({
+      productId: (product._id),
+      quantity: newQuantity
     });
-    let newQuantity = 1;
-    const updatedCartItems = [...this.cart.items];
-
-    if (cartProductIndex >= 0) {
-      newQuantity = this.cart.items[cartProductIndex].quantity + 1;
-      updatedCartItems[cartProductIndex].quantity = newQuantity;
-    } else {
-      updatedCartItems.push({
-        productId: (product._id),
-        quantity: newQuantity
-      });
-    }
-    const updatedCart = {
-      items: updatedCartItems
-    };
-    this.cart = updatedCart;
-    return this.save();
   }
+  const updatedCart = {
+    items: updatedCartItems
+  };
+  this.cart = updatedCart;
+  return this.save();
+};
 
-export default mongoose.model('User', userSchema);
+export default mongoose.model<User>('User', userSchema);
 
 // import { getDb } from '../util/database';
 // import Product from './product';

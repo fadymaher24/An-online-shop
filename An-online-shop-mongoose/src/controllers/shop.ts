@@ -3,7 +3,7 @@ import { Request, Response, NextFunction } from 'express';
 
 import Product  from '../models/product';
 
-import { Document } from 'mongoose';
+import  {User}  from '../models/user';
 
 
 export const getProducts = (req: Request, res: Response, next: NextFunction) => {
@@ -68,14 +68,22 @@ export const getIndex = (req: Request, res: Response, next: NextFunction) => {
 
 // customRequestHandler
 
+
 interface CustomRequest extends Request {
-  user?: Document<any, any> | null; // Update the type to match your User model
+  user?: User | null; // Update the type to match your User model
 }
+
 
 export const postCart = (req: CustomRequest, res: Response, next: NextFunction) => {
   const prodId = req.body.productId;
   Product.findById(prodId)
     .then(product => {
+      if (!product) {
+        throw new Error('Product not found');
+      }
+      if (!req.user) {
+        throw new Error('User not found');
+      }
       return req.user.addToCart(product);
     })
     .then(result => {
