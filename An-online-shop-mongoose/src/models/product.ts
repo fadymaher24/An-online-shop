@@ -1,8 +1,17 @@
-import  mongoose from 'mongoose';
+import mongoose, { Schema, Document } from 'mongoose';
 
-const Schema = mongoose.Schema;
 
-const productSchema = new Schema({
+export interface Product extends Document {
+  title: string;
+  price: number;
+  description: string;
+  imageUrl: string;
+  userId: Schema.Types.ObjectId;
+  _id?: string;
+}
+
+
+const productSchema = new Schema<Product>({
   title: {
     type: String,
     required: true
@@ -27,8 +36,7 @@ const productSchema = new Schema({
 });
 
 // Mongoose will automatically create a collection called 'products' based on the model name 'Product' 
-export default mongoose.model('Product', productSchema);
-
+export default mongoose.model<Product>('Product', productSchema);
 // import { getDb } from '../util/database';
 
 // interface ProductData {

@@ -3,7 +3,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.postCart = exports.getIndex = exports.getProduct = exports.getProducts = void 0;
+exports.postCart = exports.getCart = exports.getIndex = exports.getProduct = exports.getProducts = void 0;
 const product_1 = __importDefault(require("../models/product"));
 const getProducts = (req, res, next) => {
     product_1.default.find()
@@ -47,6 +47,23 @@ const getIndex = (req, res, next) => {
     });
 };
 exports.getIndex = getIndex;
+const getCart = (req, res, next) => {
+    if (!req.user) {
+        return res.redirect('/');
+    }
+    req.user
+        .populate('cart.items.productId')
+        .then((user) => {
+        console.log(user.cart.items);
+        res.render('shop/cart', {
+            path: '/cart',
+            pageTitle: 'Your Cart',
+            products: user.cart.items
+        });
+    })
+        .catch((err) => console.log(err));
+};
+exports.getCart = getCart;
 const postCart = (req, res, next) => {
     const prodId = req.body.productId;
     product_1.default.findById(prodId)

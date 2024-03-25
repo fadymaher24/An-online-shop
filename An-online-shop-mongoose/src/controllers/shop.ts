@@ -4,6 +4,7 @@ import { Request, Response, NextFunction } from 'express';
 import Product  from '../models/product';
 
 import  {User}  from '../models/user';
+import { Document } from 'mongoose';
 
 
 export const getProducts = (req: Request, res: Response, next: NextFunction) => {
@@ -48,30 +49,37 @@ export const getIndex = (req: Request, res: Response, next: NextFunction) => {
     });
 };
 
-// export const getCart = (req: Request, res: Response, next: NextFunction) => {
-//   req.user
-//     .getCart()
-//     .then(cart => {
-//       return cart
-//         .getProducts()
-//         .then(products => {
-//           res.render('shop/cart', {
-//             path: '/cart',
-//             pageTitle: 'Your Cart',
-//             products: products
-//           });
-//         })
-//         .catch(err => console.log(err));
-//     })
-//     .catch(err => console.log(err));
-// };
+interface UserDocument extends User, Document {
+  addToCart(product: typeof Product): Promise<any>;
+}
+
 
 // customRequestHandler
-
-
 interface CustomRequest extends Request {
-  user?: User | null; // Update the type to match your User model
+  user?: UserDocument | null; // Update the type to match your User model
 }
+
+
+export const getCart = (req: CustomRequest, res: Response, next: NextFunction) => {
+  if (!req.user) {
+    return res.redirect('/');
+  }
+
+  req.user
+    .populate('cart.items.productId')
+    .then((user: UserDocument) => {
+      console.log(user.cart.items);
+      res.render('shop/cart', {
+        path: '/cart',
+        pageTitle: 'Your Cart',
+        products: user.cart.items
+      });
+    })
+    .catch((err: any) => console.log(err));
+};
+
+
+
 
 
 export const postCart = (req: CustomRequest, res: Response, next: NextFunction) => {
