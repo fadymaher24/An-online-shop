@@ -48,6 +48,9 @@ class Product {
 
   static findById(prodId) {
     const db = getDb();
+    if (!mongodb.ObjectId.isValid(prodId)) {
+      return Promise.reject(new Error('Invalid product ID'));
+    }
     return db
       .collection('products')
       .find({ _id: new mongodb.ObjectId(prodId) })
@@ -63,6 +66,9 @@ class Product {
 
   static deleteById(prodId) {
     const db = getDb();
+    if (!mongodb.ObjectId.isValid(prodId)) {
+      return Promise.reject(new Error('Invalid product ID'));
+    }
     return db
       .collection('products')
       .deleteOne({ _id: new mongodb.ObjectId(prodId) })
