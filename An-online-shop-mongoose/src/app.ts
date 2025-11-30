@@ -2,6 +2,8 @@ import path from 'path';
 import express, { Request, Response, NextFunction } from 'express';
 import bodyParser from 'body-parser';
 import mongoose from 'mongoose';
+import dotenv from 'dotenv';
+dotenv.config();
 
 import { get404 } from './controllers/error';
 import { mongoConnect } from './util/database';
