@@ -6,6 +6,7 @@ const bodyParser = require('body-parser');
 const errorController = require('./controllers/error');
 const mongoConnect = require('./util/database').mongoConnect;
 const User = require('./models/user');
+const { cleanupAllCarts } = require('./util/cart-cleanup');
 
 const app = express();
 
@@ -34,4 +35,18 @@ app.use(errorController.get404);
 
 mongoConnect(() => {
   app.listen(3000);
+  console.log('Server running on http://localhost:3000');
+
+  // Run cleanup immediately on startup
+  cleanupAllCarts();
+
+  // Schedule cleanup every 24 hours (86400000 ms)
+  // For 7 days use: 7 * 24 * 60 * 60 * 1000
+  const CLEANUP_INTERVAL = 24 * 60 * 60 * 1000; // 24 hours
+  // const CLEANUP_INTERVAL = 7 * 24 * 60 * 60 * 1000; // 7 days
+
+  setInterval(() => {
+    console.log('[Scheduler] Running cart cleanup...');
+    cleanupAllCarts();
+  }, CLEANUP_INTERVAL);
 });
