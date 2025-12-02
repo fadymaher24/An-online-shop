@@ -54,6 +54,23 @@ class User {
       .find({ _id: { $in: productIds } })
       .toArray()
       .then(products => {
+        // Find valid product IDs that still exist
+        const validProductIds = products.map(p => p._id.toString());
+
+        // Filter out cart items for deleted products
+
+        const validCartItems = this.card.items.filter(item =>
+          validProductIds.includes(item.productId.toString())
+        );
+
+        if (validCartItems.length !== this.cart.items.length) {
+          this.cart.items = validCartItems;
+          db.collection('users').updateOne(
+            { _id: new ObjectId(this._id) },
+            { $set: { cart: { items: validCartItems } } }
+          );
+        }
+
         return products.map(p => {
           return {
             ...p,
@@ -79,19 +96,33 @@ class User {
   }
 
   addOrder() {
-    const db = getDB();
+    const db = getDb();
+    return this.getCart().then(products => {
+      const order = {
+        items: this.cart.items,
+        user: { _id: new ObjectId(this._id), name: this.name },
+      };
+      return db
+        .collection('orders')
+        .insertOne(order)
+        .then(result => {
+          this.cart = { items: [] };
+          return db
+            .collection('users')
+            .updateOne(
+              { _id: new ObjectId(this._id) },
+              { $set: { cart: { items: [] } } }
+            );
+        });
+    });
+  }
+
+  getOrders() {
+    const db = getDb();
     return db
       .collection('orders')
-      .insertOne(this.cart)
-      .then(result => {
-        this.cart = { items: [] };
-        return db
-          .collection('users')
-          .updateOne(
-            { _id: new ObjectId(this._id) },
-            { $set: { cart: { items: [] } } }
-          );
-      });
+      .find({ 'user._id': new ObjectId(this._id) })
+      .toArray();
   }
 
   static findById(userId) {
