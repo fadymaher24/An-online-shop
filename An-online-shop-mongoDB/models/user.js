@@ -46,9 +46,12 @@ class User {
 
   getCart() {
     const db = getDb();
-    const productIds = this.cart.items.map(i => {
-      return i.productId;
-    });
+    const productIds = this.cart.items.map(i => i.productId);
+
+    if (productIds.length === 0) {
+      return Promise.resolve([]);
+    }
+
     return db
       .collection('products')
       .find({ _id: { $in: productIds } })
@@ -58,11 +61,11 @@ class User {
         const validProductIds = products.map(p => p._id.toString());
 
         // Filter out cart items for deleted products
-
-        const validCartItems = this.card.items.filter(item =>
+        const validCartItems = this.cart.items.filter(item =>
           validProductIds.includes(item.productId.toString())
         );
 
+        // If some items were removed, update the cart in database
         if (validCartItems.length !== this.cart.items.length) {
           this.cart.items = validCartItems;
           db.collection('users').updateOne(
@@ -74,9 +77,9 @@ class User {
         return products.map(p => {
           return {
             ...p,
-            quantity: this.cart.items.find(i => {
-              return i.productId.toString() === p._id.toString();
-            }).quantity,
+            quantity: validCartItems.find(
+              i => i.productId.toString() === p._id.toString()
+            ).quantity,
           };
         });
       });
