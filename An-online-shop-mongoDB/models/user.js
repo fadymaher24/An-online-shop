@@ -29,11 +29,11 @@ class User {
     } else {
       updatedCartItems.push({
         productId: new ObjectId(product._id),
-        quantity: newQuantity
+        quantity: newQuantity,
       });
     }
     const updatedCart = {
-      items: updatedCartItems
+      items: updatedCartItems,
     };
     const db = getDb();
     return db
@@ -59,7 +59,7 @@ class User {
             ...p,
             quantity: this.cart.items.find(i => {
               return i.productId.toString() === p._id.toString();
-            }).quantity
+            }).quantity,
           };
         });
       });
@@ -74,8 +74,24 @@ class User {
       .collection('users')
       .updateOne(
         { _id: new ObjectId(this._id) },
-        { $set: { cart: {items: updatedCartItems} } }
+        { $set: { cart: { items: updatedCartItems } } }
       );
+  }
+
+  addOrder() {
+    const db = getDB();
+    return db
+      .collection('orders')
+      .insertOne(this.cart)
+      .then(result => {
+        this.cart = { items: [] };
+        return db
+          .collection('users')
+          .updateOne(
+            { _id: new ObjectId(this._id) },
+            { $set: { cart: { items: [] } } }
+          );
+      });
   }
 
   static findById(userId) {
