@@ -1,20 +1,17 @@
 import mongoose, { Schema, Document } from 'mongoose';
 
-
 export interface ProductDocument extends Document {
   title: string;
   price: number;
   description: string;
   imageUrl: string;
   userId: Schema.Types.ObjectId;
-  _id?: string;
 }
-
 
 const productSchema = new Schema<ProductDocument>({
   title: {
     type: String,
-    required: true
+    required: true,
   },
   price: {
     type: Number,
@@ -22,20 +19,20 @@ const productSchema = new Schema<ProductDocument>({
   },
   description: {
     type: String,
-    required: true
+    required: true,
   },
   imageUrl: {
     type: String,
-    required: true
+    required: true,
   },
   userId: {
     type: Schema.Types.ObjectId,
     ref: 'User',
-    required: true
-  }
+    required: true,
+  },
 });
 
-// Mongoose will automatically create a collection called 'products' based on the model name 'Product' 
+// Mongoose will automatically create a collection called 'products' based on the model name 'Product'
 export default mongoose.model<ProductDocument>('Product', productSchema);
 // import { getDb } from '../util/database';
 
