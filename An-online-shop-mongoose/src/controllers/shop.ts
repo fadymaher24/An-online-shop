@@ -1,21 +1,23 @@
 import { Request, Response, NextFunction } from 'express';
 
+import Product from '../models/product';
 
-import Product  from '../models/product';
-
-import  {User}  from '../models/user';
+import { User } from '../models/user';
 import { Document } from 'mongoose';
 import { ProductDocument } from '../models/product';
 
-
-export const getProducts = (req: Request, res: Response, next: NextFunction) => {
+export const getProducts = (
+  req: Request,
+  res: Response,
+  next: NextFunction
+) => {
   Product.find()
     .then(products => {
       console.log(products);
       res.render('shop/product-list', {
         prods: products,
         pageTitle: 'All Products',
-        path: '/products'
+        path: '/products',
       });
     })
     .catch(err => {
@@ -27,11 +29,11 @@ export const getProduct = (req: Request, res: Response, next: NextFunction) => {
   const prodId = req.params.productId;
   Product.findById(prodId)
     .then(product => {
-        res.render('shop/product-detail', {
-            product: product,
-            pageTitle: product ? product.title : '',
-            path: '/products'
-        });
+      res.render('shop/product-detail', {
+        product: product,
+        pageTitle: product ? product.title : '',
+        path: '/products',
+      });
     })
     .catch(err => console.log(err));
 };
@@ -42,7 +44,7 @@ export const getIndex = (req: Request, res: Response, next: NextFunction) => {
       res.render('shop/index', {
         prods: products,
         pageTitle: 'Shop',
-        path: '/'
+        path: '/',
       });
     })
     .catch(err => {
@@ -54,14 +56,16 @@ interface UserDocument extends User, Document {
   addToCart(product: ProductDocument): Promise<any>;
 }
 
-
 // customRequestHandler
 interface CustomRequest extends Request {
   user?: UserDocument | null; // Update the type to match your User model
 }
 
-
-export const getCart = (req: CustomRequest, res: Response, next: NextFunction) => {
+export const getCart = (
+  req: CustomRequest,
+  res: Response,
+  next: NextFunction
+) => {
   if (!req.user) {
     return res.redirect('/');
   }
@@ -74,14 +78,17 @@ export const getCart = (req: CustomRequest, res: Response, next: NextFunction) =
       res.render('shop/cart', {
         path: '/cart',
         pageTitle: 'Your Cart',
-        products: Products
+        products: Products,
       });
     })
     .catch((err: any) => console.log(err));
 };
 
-
-export const postCart = (req: CustomRequest, res: Response, next: NextFunction) => {
+export const postCart = (
+  req: CustomRequest,
+  res: Response,
+  next: NextFunction
+) => {
   const prodId = req.body.productId;
   Product.findById(prodId)
     .then(product => {
@@ -100,22 +107,42 @@ export const postCart = (req: CustomRequest, res: Response, next: NextFunction) 
     .catch(err => console.log(err));
 };
 
-// export const postCartDeleteProduct = (req: Request, res: Response, next: NextFunction) => {
-//   const prodId = req.body.productId;
-//   req.user
-//     .getCart()
-//     .then(cart => {
-//       return cart.getProducts({ where: { id: prodId } });
-//     })
-//     .then(products => {
-//       const product = products[0];
-//       return product.cartItem.destroy();
-//     })
-//     .then(result => {
-//       res.redirect('/cart');
-//     })
-//     .catch(err => console.log(err));
-// };
+export const postCartDeleteProduct = (
+  req: CustomRequest,
+  res: Response,
+  next: NextFunction
+) => {
+  const prodId = req.body.productId;
+
+  if (!req.user) {
+    return res.redirect('/');
+  }
+
+  req.user
+    .removeFromCart(prodId)
+    .then(result => {
+      console.log(result);
+      res.redirect('/cart');
+    })
+    .catch(err => console.log(err));
+};
+
+export const postOrder = (
+  req: CustomRequest,
+  res: Response,
+  next: NextFunction
+) => {
+  if (!req.user) {
+    return res.redirect('/');
+  }
+  req.user
+    .addOrder()
+    .then(result => {
+      console.log(result);
+      res.redirect('/orders');
+    })
+    .catch(err => console.log(err));
+};
 
 // export const postOrder = (req: Request, res: Response, next: NextFunction) => {
 //   let fetchedCart;

@@ -3,7 +3,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.postCart = exports.getCart = exports.getIndex = exports.getProduct = exports.getProducts = void 0;
+exports.postOrder = exports.postCartDeleteProduct = exports.postCart = exports.getCart = exports.getIndex = exports.getProduct = exports.getProducts = void 0;
 const product_1 = __importDefault(require("../models/product"));
 const getProducts = (req, res, next) => {
     product_1.default.find()
@@ -12,7 +12,7 @@ const getProducts = (req, res, next) => {
         res.render('shop/product-list', {
             prods: products,
             pageTitle: 'All Products',
-            path: '/products'
+            path: '/products',
         });
     })
         .catch(err => {
@@ -27,7 +27,7 @@ const getProduct = (req, res, next) => {
         res.render('shop/product-detail', {
             product: product,
             pageTitle: product ? product.title : '',
-            path: '/products'
+            path: '/products',
         });
     })
         .catch(err => console.log(err));
@@ -39,7 +39,7 @@ const getIndex = (req, res, next) => {
         res.render('shop/index', {
             prods: products,
             pageTitle: 'Shop',
-            path: '/'
+            path: '/',
         });
     })
         .catch(err => {
@@ -59,7 +59,7 @@ const getCart = (req, res, next) => {
         res.render('shop/cart', {
             path: '/cart',
             pageTitle: 'Your Cart',
-            products: Products
+            products: Products,
         });
     })
         .catch((err) => console.log(err));
@@ -84,22 +84,33 @@ const postCart = (req, res, next) => {
         .catch(err => console.log(err));
 };
 exports.postCart = postCart;
-// export const postCartDeleteProduct = (req: Request, res: Response, next: NextFunction) => {
-//   const prodId = req.body.productId;
-//   req.user
-//     .getCart()
-//     .then(cart => {
-//       return cart.getProducts({ where: { id: prodId } });
-//     })
-//     .then(products => {
-//       const product = products[0];
-//       return product.cartItem.destroy();
-//     })
-//     .then(result => {
-//       res.redirect('/cart');
-//     })
-//     .catch(err => console.log(err));
-// };
+const postCartDeleteProduct = (req, res, next) => {
+    const prodId = req.body.productId;
+    if (!req.user) {
+        return res.redirect('/');
+    }
+    req.user
+        .removeFromCart(prodId)
+        .then(result => {
+        console.log(result);
+        res.redirect('/cart');
+    })
+        .catch(err => console.log(err));
+};
+exports.postCartDeleteProduct = postCartDeleteProduct;
+const postOrder = (req, res, next) => {
+    if (!req.user) {
+        return res.redirect('/');
+    }
+    req.user
+        .addOrder()
+        .then(result => {
+        console.log(result);
+        res.redirect('/orders');
+    })
+        .catch(err => console.log(err));
+};
+exports.postOrder = postOrder;
 // export const postOrder = (req: Request, res: Response, next: NextFunction) => {
 //   let fetchedCart;
 //   req.user

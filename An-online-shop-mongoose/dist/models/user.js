@@ -1,4 +1,13 @@
 "use strict";
+var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
+    function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
+    return new (P || (P = Promise))(function (resolve, reject) {
+        function fulfilled(value) { try { step(generator.next(value)); } catch (e) { reject(e); } }
+        function rejected(value) { try { step(generator["throw"](value)); } catch (e) { reject(e); } }
+        function step(result) { result.done ? resolve(result.value) : adopt(result.value).then(fulfilled, rejected); }
+        step((generator = generator.apply(thisArg, _arguments || [])).next());
+    });
+};
 var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
@@ -8,7 +17,7 @@ const Schema = mongoose_1.default.Schema;
 const userSchema = new Schema({
     name: {
         type: String,
-        required: true
+        required: true,
     },
     email: {
         type: String,
@@ -17,11 +26,15 @@ const userSchema = new Schema({
     cart: {
         items: [
             {
-                productId: { type: Schema.Types.ObjectId, ref: 'Product', required: true },
-                quantity: { type: Number, required: true }
-            }
-        ]
-    }
+                productId: {
+                    type: Schema.Types.ObjectId,
+                    ref: 'Product',
+                    required: true,
+                },
+                quantity: { type: Number, required: true },
+            },
+        ],
+    },
 });
 userSchema.methods.addToCart = function (product) {
     const cartProductIndex = this.cart.items.findIndex((cp) => {
@@ -35,15 +48,40 @@ userSchema.methods.addToCart = function (product) {
     }
     else {
         updatedCartItems.push({
-            productId: (product._id),
-            quantity: newQuantity
+            productId: product._id,
+            quantity: newQuantity,
         });
     }
     const updatedCart = {
-        items: updatedCartItems
+        items: updatedCartItems,
     };
     this.cart = updatedCart;
     return this.save();
+};
+userSchema.methods.removeFromCart = function (productId) {
+    const updatedCartItems = this.cart.items.filter((item) => {
+        return item.productId.toString() !== productId.toString();
+    });
+    this.cart.items = updatedCartItems;
+    return this.save();
+};
+userSchema.methods.addOrder = function () {
+    return __awaiter(this, void 0, void 0, function* () {
+        const db = mongoose_1.default.connection; // Use mongoose's connection to interact with the database
+        const order = {
+            items: this.cart.items,
+            user: {
+                _id: this._id,
+                name: this.name,
+                email: this.email,
+            },
+        };
+        // Add the order to the orders collection
+        yield db.collection('orders').insertOne(order);
+        // Clear the user's cart
+        this.cart = { items: [] };
+        yield this.save();
+    });
 };
 exports.default = mongoose_1.default.model('User', userSchema);
 // interface CartItem {
